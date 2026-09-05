@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARIA</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eaf7ff;color:#17324a;transition:.3s}
+body.dark{background:#071a35;color:#fff}
+header{height:70px;padding:15px 22px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:28px;font-weight:800}
+button{border:0;border-radius:14px;padding:12px 18px;background:#8bd3ff;color:#123047;font-weight:bold;cursor:pointer}
+.hero{min-height:calc(100vh - 70px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:25px}
+.hero h1{font-size:42px;margin:10px}
+.hero p{font-size:18px;opacity:.75}
+#app{display:none;max-width:900px;margin:auto;padding:20px}
+.card{background:white;border-radius:24px;padding:25px;margin-bottom:20px;box-shadow:0 8px 30px #0001}
+.dark .card{background:#102b4b}
+.search{width:100%;padding:16px;border:0;border-radius:15px;margin:15px 0;font-size:16px}
+.dark .search{background:#173858;color:white}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.track{display:flex;align-items:center;justify-content:space-between;padding:16px;margin:10px 0;border-radius:18px;background:#eef9ff}
+.dark .track{background:#173858}
+.track h3{margin:0 0 5px}
+.track p{margin:0;opacity:.65}
+.add{width:100%;margin-top:10px}
+.modal{display:none;position:fixed;inset:0;background:#0008;align-items:center;justify-content:center;padding:20px}
+.box{background:white;color:#17324a;padding:25px;border-radius:25px;width:100%;max-width:430px}
+.box input{width:100%;padding:14px;margin:7px 0;border:1px solid #ddd;border-radius:12px}
+.actions{display:flex;gap:10px;margin-top:10px}
+.actions button{flex:1}
+audio{width:100%;margin-top:15px}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">ARIA</div>
+<button onclick="dark()">🌙</button>
+</header>
+
+<section class="hero" id="welcome">
+<h1>Ария, добро пожаловать на мой сайт</h1>
+<p>Музыка, которую хочется слушать.</p>
+<button onclick="start()">Начать</button>
+</section>
+
+<main id="app">
+
+<div class="card">
+<h1>Твоя музыка — твой голос.</h1>
+<p>Слушай, добавляй свои треки и собирай свою коллекцию.</p>
+
+<input class="search" id="search"
+placeholder="🔎 Найти музыку..."
+oninput="render()">
+
+<div class="tabs">
+<button onclick="tab='all';render()">Для тебя</button>
+<button onclick="tab='new';render()">Новинки</button>
+<button onclick="tab='mine';render()">Мои треки</button>
+</div>
+
+<button class="add" onclick="openModal()">＋ Добавить свой трек</button>
+</div>
+
+<div id="tracks"></div>
+
+</main>
+
+<div class="modal" id="modal">
+<div class="box">
+
+<h2>Добавить свой трек</h2>
+
+<input id="title" placeholder="Название песни">
+<input id="artist" placeholder="Исполнитель">
+<input id="file" type="file" accept="audio/*">
+
+<div class="actions">
+<button onclick="add()">Добавить</button>
+<button onclick="closeModal()">Отмена</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let tab="all";
+
+let songs=[
+{title:"First Light",artist:"ARIA Demo"},
+{title:"Blue Hour",artist:"Luna"},
+{title:"After Rain",artist:"Noa"},
+{title:"Dreamline",artist:"Mira"}
+];
+
+function start(){
+document.getElementById("welcome").style.display="none";
+document.getElementById("app").style.display="block";
+render();
+window.scrollTo(0,0);
+}
+
+function dark(){
+document.body.classList.toggle("dark");
+}
+
+function render(){
+
+let box=document.getElementById("tracks");
+let q=document.getElementById("search").value.toLowerCase();
+
+box.innerHTML="";
+
+let list=songs.filter(s=>{
+let ok=(s.title+" "+s.artist).toLowerCase().includes(q);
+if(tab==="mine"&&!s.mine)ok=false;
+return ok;
+});
+
+if(!list.length){
+box.innerHTML="<p>Ничего не найдено.</p>";
+return;
+}
+
+list.forEach((s,i)=>{
+
+let d=document.createElement("div");
+d.className="track";
+
+d.innerHTML=`
+<div>
+<h3>${s.title}</h3>
+<p>${s.artist}</p>
+</div>
+<button onclick="play(${i})">▶</button>
+`;
+
+box.appendChild(d);
+
+});
+
+}
+
+function openModal(){
+document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none";
+}
+
+function add(){
+
+let title=document.getElementById("title").value;
+let artist=document.getElementById("artist").value;
+let file=document.getElementById("file").files[0];
+
+if(!title||!artist||!file){
+alert("Заполни название, исполнителя и выбери песню.");
+return;
+}
+
+songs.unshift({
+title:title,
+artist:artist,
+url:URL.createObjectURL(file),
+mine:true
+});
+
+document.getElementById("title").value="";
+document.getElementById("artist").value="";
+document.getElementById("file").value="";
+
+closeModal();
+
+tab="mine";
+render();
+
+}
+
+function play(i){
+
+let s=songs[i];
+
+if(!s.url){
+alert("У этого демо пока нет аудиофайла.");
+return;
+}
+
+let audio=new Audio(s.url);
+audio.play();
+
+}
+
+render();
+
+</script>
+
+</body>
+</html>
