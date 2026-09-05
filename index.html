@@ -72,3 +72,310 @@
 
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARIA — Музыка</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eaf7ff;
+    color: #18324a;
+}
+
+header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+button {
+    border: none;
+    border-radius: 14px;
+    padding: 12px 18px;
+    cursor: pointer;
+    background: #8bd3ff;
+    color: #123047;
+    font-weight: bold;
+}
+
+main {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.hero {
+    background: white;
+    border-radius: 25px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+}
+
+.hero h1 {
+    font-size: 36px;
+    margin-top: 0;
+}
+
+.search {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.track {
+    background: white;
+    padding: 18px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.track h3 {
+    margin: 0 0 5px;
+}
+
+.track p {
+    margin: 0;
+    color: #6d8294;
+}
+
+.add {
+    width: 100%;
+    margin-top: 10px;
+    font-size: 17px;
+}
+
+.dark {
+    background: #071a32;
+    color: white;
+}
+
+.dark .hero,
+.dark .track {
+    background: #102b4a;
+}
+
+.dark .track p {
+    color: #abc0d5;
+}
+
+.dark .search {
+    background: #102b4a;
+    color: white;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal-box {
+    background: white;
+    padding: 25px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 450px;
+}
+
+.modal-box input {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+}
+
+.dark .modal-box {
+    background: #102b4a;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+audio {
+    width: 100%;
+    margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">ARIA</div>
+    <button onclick="theme()">🌙</button>
+</header>
+
+<main>
+
+    <section class="hero">
+        <h1>Твоя музыка — твой голос.</h1>
+        <p>Слушай музыку, добавляй свои треки и создавай свою коллекцию.</p>
+        <button onclick="openModal()">＋ Добавить свой трек</button>
+    </section>
+
+    <input
+        class="search"
+        id="search"
+        placeholder="🔎 Найти музыку..."
+        oninput="showTracks()"
+    >
+
+    <div class="tabs">
+        <button onclick="filter='all';showTracks()">Для тебя</button>
+        <button onclick="filter='new';showTracks()">Новинки</button>
+        <button onclick="filter='mine';showTracks()">Мои треки</button>
+    </div>
+
+    <div id="tracks"></div>
+
+</main>
+
+<div class="modal" id="modal">
+
+    <div class="modal-box">
+
+        <h2>Добавить свой трек</h2>
+
+        <input id="title" placeholder="Название песни">
+
+        <input id="artist" placeholder="Исполнитель">
+
+        <input id="audio" type="file" accept="audio/*">
+
+        <div class="actions">
+            <button onclick="addTrack()">Добавить</button>
+            <button onclick="closeModal()">Отмена</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let filter = "all";
+
+let tracks = [
+    {
+        title: "First Light",
+        artist: "ARIA Demo",
+        mine: false
+    },
+    {
+        title: "Blue Hour",
+        artist: "Luna",
+        mine: false
+    },
+    {
+        title: "After Rain",
+        artist: "Noa",
+        mine: false
+    },
+    {
+        title: "Dreamline",
+        artist: "Mira",
+        mine: false
+    }
+];
+
+function showTracks() {
+
+    let box = document.getElementById("tracks");
+    let search = document.getElementById("search").value.toLowerCase();
+
+    box.innerHTML = "";
+
+    let result = tracks.filter(track => {
+
+        let text =
+            track.title.toLowerCase() +
+            " " +
+            track.artist.toLowerCase();
+
+        if (!text.includes(search)) return false;
+
+        if (filter === "mine" && !track.mine) return false;
+
+        return true;
+    });
+
+    if (result.length === 0) {
+        box.innerHTML = "<p>Ничего не найдено.</p>";
+        return;
+    }
+
+    result.forEach((track, index) => {
+
+        let div = document.createElement("div");
+
+        div.className = "track";
+
+        div.innerHTML = `
+            <div>
+                <h3>${track.title}</h3>
+                <p>${track.artist}</p>
+            </div>
+
+            ${
+                track.url
+                ? `<button onclick="play(${index})">▶</button>`
+                : `<button onclick="alert('Этот демо-трек пока без аудиофайла')">▶</button>`
+            }
+        `;
+
+        box.appendChild(div);
+    });
+}
+
+function openModal() {
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+function addTrack() {
+
+    let title = document.getElementById("title").value;
+    let artist = document.getElementById("artist").value;
+    let
