@@ -1,61 +1,74 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ария</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aria — Учебный сайт</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #87CEEB;
-      color: white;
-      text-align: center;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    .container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 30px;
-      box-sizing: border-box;
-    }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #87CEEB;
+            color: white;
 
-    h1 {
-      font-size: 48px;
-      margin-bottom: 10px;
-    }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-    p {
-      font-size: 20px;
-      margin-bottom: 30px;
-    }
+        .welcome {
+            padding: 30px;
+        }
 
-    button {
-      border: none;
-      border-radius: 25px;
-      padding: 14px 28px;
-      font-size: 17px;
-      cursor: pointer;
-      background: white;
-      color: #4b9fc7;
-    }
-  </style>
+        h1 {
+            font-size: 48px;
+            margin: 0 0 15px;
+        }
+
+        p {
+            font-size: 21px;
+            margin: 0 0 35px;
+        }
+
+        .start {
+            display: inline-block;
+            padding: 16px 45px;
+
+            background: white;
+            color: #4b8fc9;
+
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+
+            transition: transform 0.2s;
+        }
+
+        .start:hover {
+            transform: scale(1.07);
+        }
+    </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>Ария</h1>
-    <p>Добро пожаловать на мой сайт ✨</p>
+    <div class="welcome">
 
-    <button onclick="alert('Добро пожаловать!')">
-      
-    </button>
-  </div>
+        <h1>Ария</h1>
+
+        <p>Добро пожаловать на мой сайт</p>
+
+        <a class="start" href="main.html">Начать</a>
+
+    </div>
 
 </body>
 </html>
